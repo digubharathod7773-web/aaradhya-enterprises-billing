@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aaradhya Enterprises Billing</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}
+header{background:#172b4d;color:white;padding:18px 22px}
+header h2{margin:0}
+.container{max-width:1100px;margin:25px auto;padding:15px}
+.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}
+input{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:7px}
+button{background:#1769e0;color:white;border:0;padding:12px 18px;border-radius:7px;cursor:pointer}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}
+.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold}
+.small{color:#65738b;font-size:14px}
+#dashboard{display:none}
+#login{max-width:420px;margin:65px auto}
+.logout{float:right;background:#e34b4b}
+</style>
+</head>
+<body>
+
+<header>
+<h2>AARADHYA ENTERPRISES</h2>
+<p>GST Billing & Inventory Management</p>
+</header>
+
+<div class="container">
+
+<div id="login" class="card">
+<h2>Login</h2>
+<p class="small">Sign in to your billing account</p>
+<input id="email" type="email" placeholder="Email Address">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()" style="width:100%">Login</button>
+<p id="message"></p>
+</div>
+
+<div id="dashboard">
+<div class="card">
+<button class="logout" onclick="logout()">Logout</button>
+<h2>Dashboard</h2>
+<p>Welcome to Aaradhya Enterprises</p>
+<p class="small">Your business management panel</p>
+</div>
+
+<div class="card">
+<h3>Company Details</h3>
+<p><b>Aaradhya Enterprises</b></p>
+<p>GSTIN: 24CATPR6765C1Z7</p>
+<p>Opp. Satyam Hall, Panchasar Road, Morbi 363641</p>
+<p>Contact: 95108 99998</p>
+</div>
+
+<h3>Business Modules</h3>
+<div class="menu">
+<div class="item">📊 Dashboard</div>
+<div class="item">🧾 Sales Entry</div>
+<div class="item">🛒 Purchase Entry</div>
+<div class="item">📦 Products & Stock</div>
+<div class="item">👥 Customers</div>
+<div class="item">🏭 Suppliers</div>
+<div class="item">📈 GST Reports</div>
+<div class="item">📒 Customer Ledger</div>
+<div class="item">📄 PDF Invoice</div>
+</div>
+</div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://nbzbmttmrxqljsgekrpl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nFL140e3jTOH8TZswp1GyQ_fW_7lTek";
+
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+async function login(){
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+const msg = document.getElementById("message");
+
+msg.innerText = "Please wait...";
+
+const {data,error} = await db.auth.signInWithPassword({
+email:email,
+password:password
+});
+
+if(error){
+msg.innerText = error.message;
+return;
+}
+showDashboard();
+}
+
+async function logout(){
+await db.auth.signOut();
+document.getElementById("dashboard").style.display="none";
+document.getElementById("login").style.display="block";
+}
+
+function showDashboard(){
+document.getElementById("login").style.display="none";
+document.getElementById("dashboard").style.display="block";
+}
+
+db.auth.getSession().then(({data})=>{
+if(data.session) showDashboard();
+});
+</script>
+
+</body>
+</html>
