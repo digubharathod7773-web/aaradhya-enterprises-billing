@@ -6,9 +6,9 @@
 <title>Aaradhya Enterprises Billing</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}header{background:#172b4d;color:white;padding:18px 22px}header h2{margin:0}.container{max-width:1150px;margin:25px auto;padding:15px}.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}input,select,textarea{width:100%;padding:11px;margin:7px 0;border:1px solid #ddd;border-radius:7px;font:inherit}button{background:#1769e0;color:white;border:0;padding:11px 16px;border-radius:7px;cursor:pointer;margin:4px}button:disabled{opacity:.6;cursor:not-allowed}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold;cursor:pointer}.small{color:#65738b;font-size:14px}#dashboard,#resetPage,#productPage,#partyPage,#invoicePage,#purchasePage,#expensePage,#recyclePage{display:none}#login{max-width:420px;margin:65px auto}.logout{float:right;background:#e34b4b}.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}.secondary{background:#65738b}.danger{background:#dc3545}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:700px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#f0f3f8}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}label{font-size:14px;font-weight:bold}.active-tab{background:#172b4d}.invoice-line input,.purchase-line input{min-width:75px}.totalbox{max-width:420px;margin-left:auto}.totalbox div{display:flex;justify-content:space-between;align-items:center;padding:7px;border-bottom:1px solid #eee}.muted{color:#65738b}.status{padding:10px;background:#eef5ff;border-radius:7px;margin:10px 0}.purchase-line select{min-width:160px}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}header{background:#172b4d;color:white;padding:18px 22px}header h2{margin:0}.container{max-width:1150px;margin:25px auto;padding:15px}.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}input,select,textarea{width:100%;padding:11px;margin:7px 0;border:1px solid #ddd;border-radius:7px;font:inherit}button{background:#1769e0;color:white;border:0;padding:11px 16px;border-radius:7px;cursor:pointer;margin:4px}button:disabled{opacity:.6;cursor:not-allowed}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold;cursor:pointer}.small{color:#65738b;font-size:14px}#dashboard,#resetPage,#productPage,#partyPage,#invoicePage,#purchasePage,#expensePage,#recyclePage,#reportsPage{display:none}#login{max-width:420px;margin:65px auto}.logout{float:right;background:#e34b4b}.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}.secondary{background:#65738b}.danger{background:#dc3545}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:700px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#f0f3f8}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}label{font-size:14px;font-weight:bold}.active-tab{background:#172b4d}.invoice-line input,.purchase-line input{min-width:75px}.totalbox{max-width:420px;margin-left:auto}.totalbox div{display:flex;justify-content:space-between;align-items:center;padding:7px;border-bottom:1px solid #eee}.muted{color:#65738b}.status{padding:10px;background:#eef5ff;border-radius:7px;margin:10px 0}.purchase-line select{min-width:160px}
 @media(max-width:600px){.card{padding:14px}.container{padding:8px}header{padding:14px}}
-@media print{header,.no-print,#invoicePage .card:first-child{display:none!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}}
+@media print{header,.no-print,#invoicePage .card:first-child,#reportsPage>.card:first-child{display:none!important}#reportsPage{display:block!important}#gstReportPrint{display:block!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}}
 </style>
 </head>
 <body>
@@ -20,7 +20,7 @@
 <div class="card"><button class="logout" onclick="logout()">Logout</button><h2>Dashboard</h2><p>Welcome to Aaradhya Enterprises</p></div>
 <div class="card"><h3>Company Details</h3><b>Aaradhya Enterprises</b><p>GSTIN: 24CATPR6765C1Z7</p><p>Opp. Satyam Hall, Panchasar Road, Morbi 363641</p><p>Contact: 95108 99998</p></div>
 <h3>Business Modules</h3><div class="menu">
-<div class="item">📊 Dashboard</div><div class="item" onclick="openInvoice()">🧾 Sales Entry / GST Invoice</div><div class="item" onclick="openPurchasePage()">🛒 Purchase Entries</div><div class="item" onclick="openProducts()">📦 Products & Stock</div><div class="item" onclick="openParties('CUSTOMER')">👥 Customers</div><div class="item" onclick="openParties('SUPPLIER')">🏭 Suppliers</div><div class="item" onclick="openExpensePage()">💸 Expenses</div><div class="item" onclick="openRecycleBin()">♻️ Recycle Bin</div><div class="item">📈 GST Reports (Coming Soon)</div><div class="item">📒 Customer Ledger (Coming Soon)</div></div>
+<div class="item">📊 Dashboard</div><div class="item" onclick="openInvoice()">🧾 Sales Entry / GST Invoice</div><div class="item" onclick="openPurchasePage()">🛒 Purchase Entries</div><div class="item" onclick="openProducts()">📦 Products & Stock</div><div class="item" onclick="openParties('CUSTOMER')">👥 Customers</div><div class="item" onclick="openParties('SUPPLIER')">🏭 Suppliers</div><div class="item" onclick="openExpensePage()">💸 Expenses</div><div class="item" onclick="openRecycleBin()">♻️ Recycle Bin</div><div class="item" onclick="openReports()">📈 GST Reports</div><div class="item">📒 Customer Ledger (Coming Soon)</div></div>
 </div>
 <div id="productPage">
 <div class="card"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>📦 Product Management</h2></div>
@@ -73,6 +73,21 @@
  <div class="card"><h3>Saved Purchase Bills</h3><button onclick="loadPurchaseBills()">Refresh</button><div class="table-wrap"><table><thead><tr><th>Bill No.</th><th>Date</th><th>Supplier</th><th>Total</th><th>View Details</th><th>Action</th></tr></thead><tbody id="purchaseTable"></tbody></table></div><p id="purchaseMessage" class="small"></p></div>
 </div>
 
+
+<div id="reportsPage">
+ <div class="card"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>📈 GST Reports</h2><p class="small">Month-wise Sales and Purchase GST summary. Deleted entries are excluded.</p>
+  <div class="form-grid"><div><label>Report Month</label><input id="reportMonth" type="month"></div><div style="align-self:end"><button onclick="loadGSTReports()">Show Report</button><button class="secondary" onclick="window.print()">Print / Save PDF</button></div></div><p id="reportsMessage" class="small"></p>
+ </div>
+ <div id="gstReportPrint">
+  <div class="card"><h3>Sales GST Summary</h3><div class="form-grid"><div><label>Total Invoices</label><h3 id="salesCount">0</h3></div><div><label>Taxable Value</label><h3 id="salesTaxable">₹0.00</h3></div><div><label>CGST</label><h3 id="salesCgst">₹0.00</h3></div><div><label>SGST</label><h3 id="salesSgst">₹0.00</h3></div><div><label>IGST</label><h3 id="salesIgst">₹0.00</h3></div><div><label>Invoice Total</label><h3 id="salesGrand">₹0.00</h3></div><div><label>Received</label><h3 id="salesPaid">₹0.00</h3></div><div><label>Balance</label><h3 id="salesBalance">₹0.00</h3></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Invoice No.</th><th>Date</th><th>Customer</th><th>Taxable</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th><th>Paid</th><th>Balance</th></tr></thead><tbody id="salesReportRows"></tbody></table></div>
+  </div>
+  <div class="card"><h3>Purchase GST Summary</h3><div class="form-grid"><div><label>Total Bills</label><h3 id="purchaseCount">0</h3></div><div><label>Taxable Value</label><h3 id="purchaseTaxable">₹0.00</h3></div><div><label>CGST</label><h3 id="purchaseCgstTotal">₹0.00</h3></div><div><label>SGST</label><h3 id="purchaseSgstTotal">₹0.00</h3></div><div><label>IGST</label><h3 id="purchaseIgstTotal">₹0.00</h3></div><div><label>Bill Total</label><h3 id="purchaseGrand">₹0.00</h3></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Bill No.</th><th>Date</th><th>Supplier</th><th>Taxable</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th></tr></thead><tbody id="purchaseReportRows"></tbody></table></div>
+  </div>
+ </div>
+</div>
+
 <div id="expensePage">
  <div class="card"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>💸 Expense Entries</h2><p class="small">Saved expenses. This screen currently provides viewing and deletion of existing expense records.</p><button onclick="loadExpenses()">Refresh</button><div class="table-wrap"><table><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Payment</th><th>Action</th></tr></thead><tbody id="expenseTable"></tbody></table></div><p id="expenseMessage" class="small"></p></div>
 </div>
@@ -85,7 +100,7 @@ const SUPABASE_URL="https://nbzbmttmrxqljsgekrpl.supabase.co";
 const SUPABASE_KEY="sb_publishable_nFL140e3jTOH8TZswp1GyQ_fW_7lTek";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let products=[],editingId=null,parties=[],editingPartyId=null,currentPartyType="CUSTOMER",invoiceProducts=[],editingInvoiceId=null,invoiceItemsAlreadySaved=false,purchaseProducts=[],purchaseSuppliers=[];
-function hideAllPages(){["login","dashboard","resetPage","productPage","partyPage","invoicePage","purchasePage","expensePage","recyclePage"].forEach(id=>document.getElementById(id).style.display="none")}
+function hideAllPages(){["login","dashboard","resetPage","productPage","partyPage","invoicePage","purchasePage","expensePage","recyclePage","reportsPage"].forEach(id=>document.getElementById(id).style.display="none")}
 function showLogin(){hideAllPages();document.getElementById("login").style.display="block"}
 function showDashboard(){hideAllPages();document.getElementById("dashboard").style.display="block"}
 function backToDashboard(){showDashboard()}
@@ -227,6 +242,33 @@ async function deletePurchaseBill(id,label){
  let {error}=await db.from("purchase_bills").update({deleted_at:new Date().toISOString()}).eq("id",id);
  if(error){await db.rpc("apply_purchase_stock",{p_bill_id:id});alert("Bill move error: "+error.message+". Stock re-application was attempted.");return}
  alert("Purchase bill "+label+" moved to Recycle Bin. Stock reduced.");loadPurchaseBills();loadProducts();
+}
+
+/* MONTHLY GST REPORTS */
+function openReports(){hideAllPages();reportsPage.style.display="block";if(!reportMonth.value)reportMonth.value=new Date().toISOString().slice(0,7);loadGSTReports()}
+function monthDateRange(month){let [y,m]=month.split("-").map(Number);let start=`${y}-${String(m).padStart(2,"0")}-01`;let last=new Date(y,m,0).getDate();let end=`${y}-${String(m).padStart(2,"0")}-${String(last).padStart(2,"0")}`;return {start,end}}
+function setReportText(id,value){document.getElementById(id).innerText=value}
+async function loadGSTReports(){
+ const msg=document.getElementById("reportsMessage"),month=reportMonth.value;
+ if(!month){msg.innerText="Please select a month.";return}
+ const {start,end}=monthDateRange(month);msg.innerText="Loading GST reports...";
+ const [salesRes,purchaseRes]=await Promise.all([
+  db.from("sales_invoices").select("id,invoice_no,invoice_number,invoice_date,customer_id,sub_total,cgst,sgst,igst,grand_total,paid_amount").is("deleted_at",null).gte("invoice_date",start).lte("invoice_date",end).order("invoice_date",{ascending:true}),
+  db.from("purchase_bills").select("id,bill_no,bill_date,supplier_id,subtotal,cgst,sgst,igst,grand_total").is("deleted_at",null).gte("bill_date",start).lte("bill_date",end).order("bill_date",{ascending:true})
+ ]);
+ if(salesRes.error||purchaseRes.error){msg.innerText="Report load error: "+(salesRes.error?.message||purchaseRes.error?.message);return}
+ const sales=salesRes.data||[],purchases=purchaseRes.data||[];
+ const partyIds=[...new Set([...sales.map(x=>x.customer_id),...purchases.map(x=>x.supplier_id)].filter(Boolean))];let partyNames={};
+ if(partyIds.length){const {data,error}=await db.from("parties").select("id,name").in("id",partyIds);if(error){msg.innerText="Party names load error: "+error.message;return}(data||[]).forEach(x=>partyNames[x.id]=x.name)}
+ const sum=(arr,key)=>arr.reduce((a,x)=>a+Number(x[key]||0),0);
+ const fmt=money;
+ document.getElementById("salesCount").innerText=sales.length;
+ setReportText("salesTaxable",fmt(sum(sales,"sub_total")));setReportText("salesCgst",fmt(sum(sales,"cgst")));setReportText("salesSgst",fmt(sum(sales,"sgst")));setReportText("salesIgst",fmt(sum(sales,"igst")));setReportText("salesGrand",fmt(sum(sales,"grand_total")));setReportText("salesPaid",fmt(sum(sales,"paid_amount")));setReportText("salesBalance",fmt(sales.reduce((a,x)=>a+Math.max(0,Number(x.grand_total||0)-Number(x.paid_amount||0)),0)));
+ document.getElementById("salesReportRows").innerHTML=sales.map(x=>{let paid=Number(x.paid_amount||0),total=Number(x.grand_total||0);return `<tr><td>${escapeHTML(x.invoice_no||x.invoice_number||"")}</td><td>${escapeHTML(x.invoice_date||"")}</td><td>${escapeHTML(partyNames[x.customer_id]||"")}</td><td>${fmt(x.sub_total)}</td><td>${fmt(x.cgst)}</td><td>${fmt(x.sgst)}</td><td>${fmt(x.igst)}</td><td>${fmt(total)}</td><td>${fmt(paid)}</td><td>${fmt(Math.max(0,total-paid))}</td></tr>`}).join("")||'<tr><td colspan="10">No sales invoices for this month</td></tr>';
+ document.getElementById("purchaseCount").innerText=purchases.length;
+ setReportText("purchaseTaxable",fmt(sum(purchases,"subtotal")));setReportText("purchaseCgstTotal",fmt(sum(purchases,"cgst")));setReportText("purchaseSgstTotal",fmt(sum(purchases,"sgst")));setReportText("purchaseIgstTotal",fmt(sum(purchases,"igst")));setReportText("purchaseGrand",fmt(sum(purchases,"grand_total")));
+ document.getElementById("purchaseReportRows").innerHTML=purchases.map(x=>`<tr><td>${escapeHTML(x.bill_no||"")}</td><td>${escapeHTML(x.bill_date||"")}</td><td>${escapeHTML(partyNames[x.supplier_id]||"")}</td><td>${fmt(x.subtotal)}</td><td>${fmt(x.cgst)}</td><td>${fmt(x.sgst)}</td><td>${fmt(x.igst)}</td><td>${fmt(x.grand_total)}</td></tr>`).join("")||'<tr><td colspan="8">No purchase bills for this month</td></tr>';
+ msg.innerText=`Report ready for ${month}. Sales: ${sales.length} invoice(s), Purchases: ${purchases.length} bill(s).`;
 }
 
 function openExpensePage(){hideAllPages();expensePage.style.display="block";loadExpenses()}
