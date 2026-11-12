@@ -70,7 +70,7 @@
   <button class="secondary" onclick="newPurchaseBill()">Clear / New Bill</button>
   <p id="purchaseFormMessage" class="small"></p>
  </div>
- <div class="card"><h3>Saved Purchase Bills</h3><button onclick="loadPurchaseBills()">Refresh</button><div class="table-wrap"><table><thead><tr><th>Bill No.</th><th>Date</th><th>Supplier</th><th>Total</th><th>Action</th></tr></thead><tbody id="purchaseTable"></tbody></table></div><p id="purchaseMessage" class="small"></p></div>
+ <div class="card"><h3>Saved Purchase Bills</h3><button onclick="loadPurchaseBills()">Refresh</button><div class="table-wrap"><table><thead><tr><th>Bill No.</th><th>Date</th><th>Supplier</th><th>Total</th><th>View Details</th><th>Action</th></tr></thead><tbody id="purchaseTable"></tbody></table></div><p id="purchaseMessage" class="small"></p></div>
 </div>
 
 <div id="expensePage">
@@ -147,7 +147,7 @@ function addPurchaseRow(data=null){
  let opts=purchaseProducts.map(p=>`<option value="${p.id}">${escapeHTML(p.product_name)}</option>`).join("");
  tr.innerHTML=`<td><select class="pproduct" onchange="selectPurchaseProduct(this)"><option value="">Select Product</option>${opts}</select></td><td><input class="pqty" type="number" min=".01" step=".01" value="1" oninput="calculatePurchase()"></td><td><input class="prate" type="number" min="0" step=".01" oninput="calculatePurchase()"></td><td><input class="pgst" type="number" min="0" step=".01" oninput="calculatePurchase()"></td><td class="ptaxable">0.00</td><td class="plineTotal">0.00</td><td><button class="danger" onclick="this.closest('tr').remove();calculatePurchase()">X</button></td>`;
  purchaseItems.appendChild(tr);
- if(data){let s=tr.querySelector(".pproduct");if(data.product_id&&!purchaseProducts.some(p=>String(p.id)===String(data.product_id)))s.add(new Option("Saved product",data.product_id));s.value=data.product_id||"";tr.querySelector(".pqty").value=data.quantity??1;tr.querySelector(".prate").value=data.rate??0;tr.querySelector(".pgst").value=data.gst_percentage??0}
+ if(data){let s=tr.querySelector(".pproduct");if(data.product_id&&!purchaseProducts.some(p=>String(p.id)===String(data.product_id)))s.add(new Option("Saved product",data.product_id));s.value=data.product_id||"";tr.querySelector(".pqty").value=data.quantity??1;tr.querySelector(".prate").value=data.rate??0;tr.querySelector(".pgst").value=data.gst_percentage??data.gst_percent??0}
  calculatePurchase();
 }
 function selectPurchaseProduct(sel){let p=purchaseProducts.find(x=>String(x.id)===sel.value),tr=sel.closest("tr");tr.querySelector(".prate").value=p?.purchase_price??0;tr.querySelector(".pgst").value=p?.gst_percentage??0;calculatePurchase()}
@@ -174,13 +174,51 @@ async function savePurchaseBill(){
  msg.innerText="Purchase bill "+bill.bill_no+" saved successfully. Stock increased.";btn.disabled=false;newPurchaseBill();purchaseFormMessage.innerText=msg.innerText;await loadPurchaseBills();await loadProducts();
 }
 async function loadPurchaseBills(){
- purchaseTable.innerHTML="<tr><td colspan='5'>Loading...</td></tr>";
+ purchaseTable.innerHTML="<tr><td colspan='6'>Loading...</td></tr>";
  let {data,error}=await db.from("purchase_bills").select("id,bill_no,bill_date,supplier_id,grand_total").is("deleted_at",null).order("created_at",{ascending:false}).limit(100);
  if(error){purchaseTable.innerHTML="";purchaseMessage.innerText="Load error: "+error.message;return}
  let supplierIds=[...new Set((data||[]).map(b=>b.supplier_id).filter(Boolean))],names={};
  if(supplierIds.length){let {data:ss}=await db.from("parties").select("id,name").in("id",supplierIds);(ss||[]).forEach(s=>names[s.id]=s.name)}
  purchaseMessage.innerText="";
- purchaseTable.innerHTML=(data||[]).map(b=>`<tr><td>${escapeHTML(b.bill_no||"")}</td><td>${escapeHTML(b.bill_date||"")}</td><td>${escapeHTML(names[b.supplier_id]||b.supplier_id||"")}</td><td>${money(b.grand_total)}</td><td><button class="danger" onclick="deletePurchaseBill('${b.id}','${escapeHTML(b.bill_no||"Purchase bill")}')">Delete</button></td></tr>`).join("")||"<tr><td colspan='5'>No purchase bills found</td></tr>";
+ purchaseTable.innerHTML=(data||[]).map(b=>`<tr><td>${escapeHTML(b.bill_no||"")}</td><td>${escapeHTML(b.bill_date||"")}</td><td>${escapeHTML(names[b.supplier_id]||b.supplier_id||"")}</td><td>${money(b.grand_total)}</td><td><button onclick="viewPurchaseBill('${b.id}')">View Details</button></td><td><button class="danger" onclick="deletePurchaseBill('${b.id}','${escapeHTML(b.bill_no||"Purchase bill")}')">Delete</button></td></tr>`).join("")||"<tr><td colspan='6'>No purchase bills found</td></tr>";
+}
+async function viewPurchaseBill(id){
+ const {data:bill,error:billError}=await db.from("purchase_bills").select("*").eq("id",id).single();
+ if(billError){alert("Purchase bill load error: "+billError.message);return}
+ const {data:items,error:itemError}=await db.from("purchase_bill_items").select("*").eq("purchased_id",id);
+ if(itemError){alert("Purchase items load error: "+itemError.message);return}
+ let supplier={};
+ if(bill.supplier_id){
+  const {data,error}=await db.from("parties").select("name,phone,gstin,address").eq("id",bill.supplier_id).maybeSingle();
+  if(error){alert("Supplier details load error: "+error.message);return}
+  supplier=data||{};
+ }
+ const productIds=[...new Set((items||[]).map(x=>x.product_id).filter(Boolean))];
+ let productMap={};
+ if(productIds.length){
+  const {data,error}=await db.from("products").select("id,product_name,hsn_code").in("id",productIds);
+  if(error){alert("Product details load error: "+error.message);return}
+  (data||[]).forEach(p=>productMap[p.id]=p);
+ }
+ const rows=(items||[]).map((it,i)=>{
+  const p=productMap[it.product_id]||{};
+  const qty=Number(it.quantity||0),rate=Number(it.rate||0),gst=Number(it.gst_percentage??it.gst_percent??0);
+  const taxable=qty*rate, lineTotal=Number(it.total??(taxable*(1+gst/100)));
+  return `<tr><td>${i+1}</td><td>${escapeHTML(p.product_name||"Product")}</td><td>${escapeHTML(p.hsn_code||"")}</td><td>${qty}</td><td>${money(rate)}</td><td>${gst}%</td><td>${money(taxable)}</td><td>${money(lineTotal)}</td></tr>`;
+ }).join("");
+ const safe=(v)=>escapeHTML(v||"—");
+ const w=window.open("","_blank");
+ if(!w){alert("Please allow pop-ups for this website to view and print purchase bills.");return}
+ const billHtml=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Purchase Bill ${escapeHTML(bill.bill_no||"")}</title><style>
+ *{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#222;margin:25px}h1,h2,p{margin:5px 0}.top{text-align:center;border-bottom:2px solid #222;padding-bottom:14px;margin-bottom:18px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.panel{border:1px solid #bbb;padding:12px;border-radius:5px}.panel p{margin:6px 0}.items{width:100%;border-collapse:collapse;margin-top:18px}.items th,.items td{border:1px solid #bbb;padding:8px;text-align:left;font-size:13px}.items th{background:#eee}.totals{width:320px;max-width:100%;margin:18px 0 0 auto}.totals div{display:flex;justify-content:space-between;padding:7px;border-bottom:1px solid #ddd}.grand{font-size:18px;font-weight:bold}.actions{margin:18px 0;text-align:right}.actions button{padding:10px 18px;margin-left:8px;cursor:pointer}@media print{.actions{display:none}body{margin:10mm}}
+ </style></head><body>
+ <div class="top"><h1>AARADHYA ENTERPRISES</h1><p>Opp. Satyam Hall, Panchasar Road, Morbi 363641</p><p>GSTIN: 24CATPR6765C1Z7 | Phone: 95108 99998</p><h2>PURCHASE BILL DETAILS</h2></div>
+ <div class="meta"><div class="panel"><h3>Supplier Details</h3><p><b>Name:</b> ${safe(supplier.name)}</p><p><b>Phone:</b> ${safe(supplier.phone)}</p><p><b>GSTIN:</b> ${safe(supplier.gstin)}</p><p><b>Address:</b> ${safe(supplier.address)}</p></div><div class="panel"><h3>Bill Details</h3><p><b>Supplier Bill Number:</b> ${safe(bill.bill_no)}</p><p><b>Bill Date:</b> ${safe(bill.bill_date)}</p></div></div>
+ <table class="items"><thead><tr><th>No.</th><th>Product</th><th>HSN</th><th>Qty</th><th>Rate</th><th>GST %</th><th>Taxable Value</th><th>Line Total</th></tr></thead><tbody>${rows||'<tr><td colspan="8">No items found</td></tr>'}</tbody></table>
+ <div class="totals"><div><span>Subtotal</span><b>${money(bill.subtotal)}</b></div><div><span>CGST</span><b>${money(bill.cgst)}</b></div><div><span>SGST</span><b>${money(bill.sgst)}</b></div><div><span>IGST</span><b>${money(bill.igst)}</b></div><div class="grand"><span>Grand Total</span><b>${money(bill.grand_total)}</b></div></div>
+ <div class="actions"><button onclick="window.print()">Print / Save PDF</button><button onclick="window.close()">Close</button></div>
+ </body></html>`;
+ w.document.open();w.document.write(billHtml);w.document.close();
 }
 async function deletePurchaseBill(id,label){
  if(!confirm("Move purchase bill "+label+" to Recycle Bin? Stock will be reduced and the bill can be restored."))return;
