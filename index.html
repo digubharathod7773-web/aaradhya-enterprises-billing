@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aaradhya Enterprises Billing</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}
@@ -15,16 +16,18 @@ header h2{margin:0}
 .card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}
 input{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:7px}
 button{background:#1769e0;color:white;border:0;padding:12px 18px;border-radius:7px;cursor:pointer}
+button:disabled{opacity:.6;cursor:not-allowed}
 .menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}
 .item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold}
 .small{color:#65738b;font-size:14px}
-#dashboard{display:none}
+#dashboard,#resetPage{display:none}
 #login{max-width:420px;margin:65px auto}
 .logout{float:right;background:#e34b4b}
+.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}
 </style>
 </head>
-<body>
 
+<body>
 <header>
 <h2>AARADHYA ENTERPRISES</h2>
 <p>GST Billing & Inventory Management</p>
@@ -32,16 +35,37 @@ button{background:#1769e0;color:white;border:0;padding:12px 18px;border-radius:7
 
 <div class="container">
 
+<!-- LOGIN -->
 <div id="login" class="card">
 <h2>Login</h2>
 <p class="small">Sign in to your billing account</p>
+
 <input id="email" type="email" placeholder="Email Address">
 <input id="password" type="password" placeholder="Password">
+
 <button onclick="login()" style="width:100%">Login</button>
+<button class="link" onclick="forgotPassword()">Forgot Password?</button>
 <p id="message"></p>
 </div>
 
+<!-- RESET PASSWORD -->
+<div id="resetPage" class="card" style="max-width:420px;margin:65px auto">
+<h2>Reset Password</h2>
+<p class="small">Create your new password</p>
+
+<input id="newPassword" type="password" placeholder="New Password">
+<input id="confirmPassword" type="password" placeholder="Confirm New Password">
+
+<button onclick="updatePassword()" style="width:100%">
+Update Password
+</button>
+
+<p id="resetMessage"></p>
+</div>
+
+<!-- DASHBOARD -->
 <div id="dashboard">
+
 <div class="card">
 <button class="logout" onclick="logout()">Logout</button>
 <h2>Dashboard</h2>
@@ -73,48 +97,164 @@ button{background:#1769e0;color:white;border:0;padding:12px 18px;border-radius:7
 </div>
 
 <script>
-const SUPABASE_URL = "https://nbzbmttmrxqljsgekrpl.supabase.co";
-const SUPABASE_KEY = "sb_publishable_nFL140e3jTOH8TZswp1GyQ_fW_7lTek";
+const SUPABASE_URL =
+"https://nbzbmttmrxqljsgekrpl.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_nFL140e3jTOH8TZswp1GyQ_fW_7lTek";
 
 const db = window.supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
 
-async function login(){
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
-const msg = document.getElementById("message");
-
-msg.innerText = "Please wait...";
-
-const {data,error} = await db.auth.signInWithPassword({
-email:email,
-password:password
-});
-
-if(error){
-msg.innerText = error.message;
-return;
-}
-showDashboard();
-}
-
-async function logout(){
-await db.auth.signOut();
-document.getElementById("dashboard").style.display="none";
+function showLogin(){
 document.getElementById("login").style.display="block";
+document.getElementById("dashboard").style.display="none";
+document.getElementById("resetPage").style.display="none";
 }
 
 function showDashboard(){
 document.getElementById("login").style.display="none";
 document.getElementById("dashboard").style.display="block";
+document.getElementById("resetPage").style.display="none";
 }
 
-db.auth.getSession().then(({data})=>{
-if(data.session) showDashboard();
-});
-</script>
+function showReset(){
+document.getElementById("login").style.display="none";
+document.getElementById("dashboard").style.display="none";
+document.getElementById("resetPage").style.display="block";
+}
 
+// LOGIN
+async function login(){
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+const msg=document.getElementById("message");
+
+if(!email || !password){
+msg.innerText="Enter email and password";
+return;
+}
+
+msg.innerText="Please wait...";
+
+const {data,error}=await db.auth.signInWithPassword({
+email,
+password
+});
+
+if(error){
+msg.innerText=error.message;
+return;
+}
+
+showDashboard();
+}
+
+// FORGOT PASSWORD
+async function forgotPassword(){
+const email=document.getElementById("email").value.trim();
+const msg=document.getElementById("message");
+
+if(!email){
+msg.innerText="First enter your email address";
+return;
+}
+
+msg.innerText="Sending reset email...";
+
+const redirectURL=window.location.origin+
+window.location.pathname;
+
+const {error}=await db.auth.resetPasswordForEmail(
+email,
+{
+redirectTo:redirectURL
+}
+);
+
+if(error){
+msg.innerText=error.message;
+return;
+}
+
+msg.innerText="Password reset email sent. Check your inbox.";
+}
+
+// UPDATE PASSWORD
+async function updatePassword(){
+const password=document.getElementById("newPassword").value;
+const confirm=document.getElementById("confirmPassword").value;
+const msg=document.getElementById("resetMessage");
+
+if(password.length<8){
+msg.innerText="Password must be at least 8 characters";
+return;
+}
+
+if(password!==confirm){
+msg.innerText="Passwords do not match";
+return;
+}
+
+msg.innerText="Updating password...";
+
+const {error}=await db.auth.updateUser({
+password:password
+});
+
+if(error){
+msg.innerText=error.message;
+return;
+}
+
+msg.innerText="Password updated successfully!";
+
+document.getElementById("newPassword").value="";
+document.getElementById("confirmPassword").value="";
+
+setTimeout(()=>{
+showDashboard();
+},1500);
+}
+
+// LOGOUT
+async function logout(){
+await db.auth.signOut();
+showLogin();
+}
+
+// SUPABASE AUTH EVENTS
+db.auth.onAuthStateChange((event,session)=>{
+
+if(event==="PASSWORD_RECOVERY"){
+showReset();
+return;
+}
+
+if(event==="SIGNED_IN" && session){
+showDashboard();
+}
+
+if(event==="SIGNED_OUT"){
+showLogin();
+}
+
+});
+
+// CHECK EXISTING SESSION
+db.auth.getSession().then(({data,error})=>{
+if(error){
+console.error(error);
+return;
+}
+
+if(data.session){
+showDashboard();
+}
+});
+
+</script>
 </body>
 </html>
