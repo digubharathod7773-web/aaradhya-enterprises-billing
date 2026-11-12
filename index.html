@@ -6,9 +6,9 @@
 <title>Aaradhya Enterprises Billing</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}header{background:#172b4d;color:white;padding:18px 22px}header h2{margin:0}.container{max-width:1150px;margin:25px auto;padding:15px}.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}input,select,textarea{width:100%;padding:11px;margin:7px 0;border:1px solid #ddd;border-radius:7px;font:inherit}button{background:#1769e0;color:white;border:0;padding:11px 16px;border-radius:7px;cursor:pointer;margin:4px}button:disabled{opacity:.6;cursor:not-allowed}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold;cursor:pointer}.small{color:#65738b;font-size:14px}#dashboard,#resetPage,#productPage,#partyPage,#invoicePage,#purchasePage,#expensePage,#recyclePage,#reportsPage,#stockPage{display:none}#login{max-width:420px;margin:65px auto}.logout{float:right;background:#e34b4b}.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}.secondary{background:#65738b}.danger{background:#dc3545}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:700px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#f0f3f8}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}label{font-size:14px;font-weight:bold}.active-tab{background:#172b4d}.invoice-line input,.purchase-line input{min-width:75px}.totalbox{max-width:420px;margin-left:auto}.totalbox div{display:flex;justify-content:space-between;align-items:center;padding:7px;border-bottom:1px solid #eee}.muted{color:#65738b}.status{padding:10px;background:#eef5ff;border-radius:7px;margin:10px 0}.purchase-line select{min-width:160px}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}header{background:#172b4d;color:white;padding:18px 22px}header h2{margin:0}.container{max-width:1150px;margin:25px auto;padding:15px}.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}input,select,textarea{width:100%;padding:11px;margin:7px 0;border:1px solid #ddd;border-radius:7px;font:inherit}button{background:#1769e0;color:white;border:0;padding:11px 16px;border-radius:7px;cursor:pointer;margin:4px}button:disabled{opacity:.6;cursor:not-allowed}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold;cursor:pointer}.small{color:#65738b;font-size:14px}#dashboard,#resetPage,#productPage,#partyPage,#invoicePage,#purchasePage,#expensePage,#recyclePage,#reportsPage,#stockPage,#outstandingPage{display:none}#login{max-width:420px;margin:65px auto}.logout{float:right;background:#e34b4b}.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}.secondary{background:#65738b}.danger{background:#dc3545}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:700px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#f0f3f8}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}label{font-size:14px;font-weight:bold}.active-tab{background:#172b4d}.invoice-line input,.purchase-line input{min-width:75px}.totalbox{max-width:420px;margin-left:auto}.totalbox div{display:flex;justify-content:space-between;align-items:center;padding:7px;border-bottom:1px solid #eee}.muted{color:#65738b}.status{padding:10px;background:#eef5ff;border-radius:7px;margin:10px 0}.purchase-line select{min-width:160px}
 @media(max-width:600px){.card{padding:14px}.container{padding:8px}header{padding:14px}}
-@media print{header,.no-print,#invoicePage .card:first-child,#reportsPage>.card:first-child,#stockPage>.card:first-child{display:none!important}#reportsPage{display:block!important}#gstReportPrint{display:block!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}}
+@media print{header,.no-print,#invoicePage .card:first-child,#reportsPage>.card:first-child,#stockPage>.card:first-child,#outstandingPage>.card:first-child{display:none!important}#reportsPage{display:block!important}#gstReportPrint{display:block!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}}
 </style>
 </head>
 <body>
@@ -20,7 +20,7 @@
 <div class="card"><button class="logout" onclick="logout()">Logout</button><h2>Dashboard</h2><p>Welcome to Aaradhya Enterprises</p></div>
 <div class="card"><h3>Company Details</h3><b>Aaradhya Enterprises</b><p>GSTIN: 24CATPR6765C1Z7</p><p>Opp. Satyam Hall, Panchasar Road, Morbi 363641</p><p>Contact: 95108 99998</p></div>
 <h3>Business Modules</h3><div class="menu">
-<div class="item">📊 Dashboard</div><div class="item" onclick="openInvoice()">🧾 Sales Entry / GST Invoice</div><div class="item" onclick="openPurchasePage()">🛒 Purchase Entries</div><div class="item" onclick="openProducts()">📦 Products & Stock</div><div class="item" onclick="openParties('CUSTOMER')">👥 Customers</div><div class="item" onclick="openParties('SUPPLIER')">🏭 Suppliers</div><div class="item" onclick="openExpensePage()">💸 Expenses</div><div class="item" onclick="openRecycleBin()">♻️ Recycle Bin</div><div class="item" onclick="openReports()">📈 GST Reports</div><div class="item" onclick="openStockReport()">📦 Stock Report & Low Stock Alert</div><div class="item">📒 Customer Ledger (Coming Soon)</div></div>
+<div class="item">📊 Dashboard</div><div class="item" onclick="openInvoice()">🧾 Sales Entry / GST Invoice</div><div class="item" onclick="openPurchasePage()">🛒 Purchase Entries</div><div class="item" onclick="openProducts()">📦 Products & Stock</div><div class="item" onclick="openParties('CUSTOMER')">👥 Customers</div><div class="item" onclick="openParties('SUPPLIER')">🏭 Suppliers</div><div class="item" onclick="openExpensePage()">💸 Expenses</div><div class="item" onclick="openRecycleBin()">♻️ Recycle Bin</div><div class="item" onclick="openReports()">📈 GST Reports</div><div class="item" onclick="openStockReport()">📦 Stock Report & Low Stock Alert</div><div class="item" onclick="openOutstandingReport()">📒 Customer Outstanding Report</div></div>
 </div>
 <div id="productPage">
 <div class="card"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>📦 Product Management</h2></div>
@@ -110,6 +110,16 @@
  </div>
 </div>
 
+
+<div id="outstandingPage">
+ <div class="card no-print"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>📒 Customer Outstanding Report</h2><p class="small">Shows unpaid sales invoice balances and customer opening balances. This report does not change any records.</p><button onclick="loadOutstandingReport()">Refresh Report</button><button class="secondary" onclick="window.print()">Print / Save PDF</button><p id="outstandingMessage" class="small"></p></div>
+ <div id="outstandingPrint">
+  <div class="card"><h3>Outstanding Summary</h3><div class="form-grid"><div><label>Total Customers</label><h3 id="outstandingCustomerCount">0</h3></div><div><label>Total Invoice Amount</label><h3 id="outstandingInvoiceTotal">₹0.00</h3></div><div><label>Total Received</label><h3 id="outstandingPaidTotal">₹0.00</h3></div><div><label>Invoice Balance</label><h3 id="outstandingInvoiceBalance">₹0.00</h3></div><div><label>Opening Balance</label><h3 id="outstandingOpeningTotal">₹0.00</h3></div><div><label>Total Outstanding</label><h3 id="outstandingGrandTotal">₹0.00</h3></div></div></div>
+  <div class="card"><h3>Customer-wise Outstanding</h3><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Mobile</th><th>Invoices</th><th>Invoice Total</th><th>Received</th><th>Invoice Balance</th><th>Opening Balance</th><th>Total Due</th></tr></thead><tbody id="outstandingCustomerRows"></tbody></table></div></div>
+  <div class="card"><h3>Unpaid Invoice Details</h3><div class="table-wrap"><table><thead><tr><th>Invoice No.</th><th>Date</th><th>Customer</th><th>Invoice Amount</th><th>Paid</th><th>Balance</th></tr></thead><tbody id="outstandingInvoiceRows"></tbody></table></div></div>
+ </div>
+</div>
+
 <div id="expensePage">
  <div class="card"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>💸 Expense Entries</h2><p class="small">Saved expenses. This screen currently provides viewing and deletion of existing expense records.</p><button onclick="loadExpenses()">Refresh</button><div class="table-wrap"><table><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Payment</th><th>Action</th></tr></thead><tbody id="expenseTable"></tbody></table></div><p id="expenseMessage" class="small"></p></div>
 </div>
@@ -122,7 +132,7 @@ const SUPABASE_URL="https://nbzbmttmrxqljsgekrpl.supabase.co";
 const SUPABASE_KEY="sb_publishable_nFL140e3jTOH8TZswp1GyQ_fW_7lTek";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let products=[],editingId=null,parties=[],editingPartyId=null,currentPartyType="CUSTOMER",invoiceProducts=[],editingInvoiceId=null,invoiceItemsAlreadySaved=false,purchaseProducts=[],purchaseSuppliers=[];
-function hideAllPages(){["login","dashboard","resetPage","productPage","partyPage","invoicePage","purchasePage","expensePage","recyclePage","reportsPage","stockPage"].forEach(id=>document.getElementById(id).style.display="none")}
+function hideAllPages(){["login","dashboard","resetPage","productPage","partyPage","invoicePage","purchasePage","expensePage","recyclePage","reportsPage","stockPage","outstandingPage"].forEach(id=>document.getElementById(id).style.display="none")}
 function showLogin(){hideAllPages();document.getElementById("login").style.display="block"}
 function showDashboard(){hideAllPages();document.getElementById("dashboard").style.display="block"}
 function backToDashboard(){showDashboard()}
@@ -322,6 +332,34 @@ async function loadGSTReports(){
  setReportText("purchaseTaxable",fmt(sum(purchases,"subtotal")));setReportText("purchaseCgstTotal",fmt(sum(purchases,"cgst")));setReportText("purchaseSgstTotal",fmt(sum(purchases,"sgst")));setReportText("purchaseIgstTotal",fmt(sum(purchases,"igst")));setReportText("purchaseGrand",fmt(sum(purchases,"grand_total")));
  document.getElementById("purchaseReportRows").innerHTML=purchases.map(x=>`<tr><td>${escapeHTML(x.bill_no||"")}</td><td>${escapeHTML(x.bill_date||"")}</td><td>${escapeHTML(partyNames[x.supplier_id]||"")}</td><td>${fmt(x.subtotal)}</td><td>${fmt(x.cgst)}</td><td>${fmt(x.sgst)}</td><td>${fmt(x.igst)}</td><td>${fmt(x.grand_total)}</td></tr>`).join("")||'<tr><td colspan="8">No purchase bills for this month</td></tr>';
  msg.innerText=`Report ready for ${month}. Sales: ${sales.length} invoice(s), Purchases: ${purchases.length} bill(s).`;
+}
+
+/* CUSTOMER OUTSTANDING REPORT */
+function openOutstandingReport(){hideAllPages();document.getElementById("outstandingPage").style.display="block";loadOutstandingReport()}
+async function loadOutstandingReport(){
+ const msg=document.getElementById("outstandingMessage");
+ msg.innerText="Loading customer outstanding report...";
+ const [partyRes,invoiceRes]=await Promise.all([
+  db.from("parties").select("id,name,phone,opening_balance,party_type").is("deleted_at",null).in("party_type",["CUSTOMER","BOTH"]).order("name",{ascending:true}),
+  db.from("sales_invoices").select("id,invoice_no,invoice_number,invoice_date,customer_id,grand_total,paid_amount").is("deleted_at",null).order("invoice_date",{ascending:true})
+ ]);
+ if(partyRes.error||invoiceRes.error){msg.innerText="Report load error: "+(partyRes.error?.message||invoiceRes.error?.message);return}
+ const customers=partyRes.data||[],invoices=invoiceRes.data||[];
+ const byId={};customers.forEach(c=>byId[c.id]={...c,count:0,total:0,paid:0,balance:0});
+ invoices.forEach(inv=>{const id=inv.customer_id;if(!byId[id])return;const total=Number(inv.grand_total||0),paid=Number(inv.paid_amount||0),balance=Math.max(0,total-paid);byId[id].count++;byId[id].total+=total;byId[id].paid+=paid;byId[id].balance+=balance});
+ const rows=Object.values(byId).map(c=>({...c,opening:Number(c.opening_balance||0),due:c.balance+Number(c.opening_balance||0)})).filter(c=>c.count>0||c.opening!==0);
+ const sum=(arr,key)=>arr.reduce((a,x)=>a+Number(x[key]||0),0);
+ const invoiceTotal=sum(rows,"total"),paidTotal=sum(rows,"paid"),invoiceBalance=sum(rows,"balance"),openingTotal=sum(rows,"opening"),grandDue=sum(rows,"due");
+ document.getElementById("outstandingCustomerCount").innerText=rows.length;
+ document.getElementById("outstandingInvoiceTotal").innerText=money(invoiceTotal);
+ document.getElementById("outstandingPaidTotal").innerText=money(paidTotal);
+ document.getElementById("outstandingInvoiceBalance").innerText=money(invoiceBalance);
+ document.getElementById("outstandingOpeningTotal").innerText=money(openingTotal);
+ document.getElementById("outstandingGrandTotal").innerText=money(grandDue);
+ document.getElementById("outstandingCustomerRows").innerHTML=rows.map(c=>`<tr><td>${escapeHTML(c.name||"")}</td><td>${escapeHTML(c.phone||"")}</td><td>${c.count}</td><td>${money(c.total)}</td><td>${money(c.paid)}</td><td>${money(c.balance)}</td><td>${money(c.opening)}</td><td><b>${money(c.due)}</b></td></tr>`).join("")||'<tr><td colspan="8">No customer outstanding found</td></tr>';
+ const dueInvoices=invoices.filter(inv=>Math.max(0,Number(inv.grand_total||0)-Number(inv.paid_amount||0))>0);
+ document.getElementById("outstandingInvoiceRows").innerHTML=dueInvoices.map(inv=>{const c=byId[inv.customer_id];return `<tr><td>${escapeHTML(inv.invoice_no||inv.invoice_number||"")}</td><td>${escapeHTML(inv.invoice_date||"")}</td><td>${escapeHTML(c?.name||"Unknown Customer")}</td><td>${money(inv.grand_total)}</td><td>${money(inv.paid_amount)}</td><td><b>${money(Math.max(0,Number(inv.grand_total||0)-Number(inv.paid_amount||0)))}</b></td></tr>`}).join("")||'<tr><td colspan="6">No unpaid invoices</td></tr>';
+ msg.innerText=`Report ready. ${rows.length} customer(s) with invoices or opening balance.`;
 }
 
 function openExpensePage(){hideAllPages();expensePage.style.display="block";loadExpenses()}
