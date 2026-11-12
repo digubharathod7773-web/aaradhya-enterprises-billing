@@ -6,9 +6,9 @@
 <title>Aaradhya Enterprises Billing</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}header{background:#172b4d;color:white;padding:18px 22px}header h2{margin:0}.container{max-width:1150px;margin:25px auto;padding:15px}.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}input,select,textarea{width:100%;padding:11px;margin:7px 0;border:1px solid #ddd;border-radius:7px;font:inherit}button{background:#1769e0;color:white;border:0;padding:11px 16px;border-radius:7px;cursor:pointer;margin:4px}button:disabled{opacity:.6;cursor:not-allowed}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold;cursor:pointer}.small{color:#65738b;font-size:14px}#dashboard,#resetPage,#productPage,#partyPage,#invoicePage,#purchasePage,#expensePage,#recyclePage,#reportsPage{display:none}#login{max-width:420px;margin:65px auto}.logout{float:right;background:#e34b4b}.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}.secondary{background:#65738b}.danger{background:#dc3545}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:700px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#f0f3f8}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}label{font-size:14px;font-weight:bold}.active-tab{background:#172b4d}.invoice-line input,.purchase-line input{min-width:75px}.totalbox{max-width:420px;margin-left:auto}.totalbox div{display:flex;justify-content:space-between;align-items:center;padding:7px;border-bottom:1px solid #eee}.muted{color:#65738b}.status{padding:10px;background:#eef5ff;border-radius:7px;margin:10px 0}.purchase-line select{min-width:160px}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}header{background:#172b4d;color:white;padding:18px 22px}header h2{margin:0}.container{max-width:1150px;margin:25px auto;padding:15px}.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}input,select,textarea{width:100%;padding:11px;margin:7px 0;border:1px solid #ddd;border-radius:7px;font:inherit}button{background:#1769e0;color:white;border:0;padding:11px 16px;border-radius:7px;cursor:pointer;margin:4px}button:disabled{opacity:.6;cursor:not-allowed}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold;cursor:pointer}.small{color:#65738b;font-size:14px}#dashboard,#resetPage,#productPage,#partyPage,#invoicePage,#purchasePage,#expensePage,#recyclePage,#reportsPage,#stockPage{display:none}#login{max-width:420px;margin:65px auto}.logout{float:right;background:#e34b4b}.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}.secondary{background:#65738b}.danger{background:#dc3545}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:700px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#f0f3f8}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}label{font-size:14px;font-weight:bold}.active-tab{background:#172b4d}.invoice-line input,.purchase-line input{min-width:75px}.totalbox{max-width:420px;margin-left:auto}.totalbox div{display:flex;justify-content:space-between;align-items:center;padding:7px;border-bottom:1px solid #eee}.muted{color:#65738b}.status{padding:10px;background:#eef5ff;border-radius:7px;margin:10px 0}.purchase-line select{min-width:160px}
 @media(max-width:600px){.card{padding:14px}.container{padding:8px}header{padding:14px}}
-@media print{header,.no-print,#invoicePage .card:first-child,#reportsPage>.card:first-child{display:none!important}#reportsPage{display:block!important}#gstReportPrint{display:block!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}}
+@media print{header,.no-print,#invoicePage .card:first-child,#reportsPage>.card:first-child,#stockPage>.card:first-child{display:none!important}#reportsPage{display:block!important}#gstReportPrint{display:block!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}}
 </style>
 </head>
 <body>
@@ -20,7 +20,7 @@
 <div class="card"><button class="logout" onclick="logout()">Logout</button><h2>Dashboard</h2><p>Welcome to Aaradhya Enterprises</p></div>
 <div class="card"><h3>Company Details</h3><b>Aaradhya Enterprises</b><p>GSTIN: 24CATPR6765C1Z7</p><p>Opp. Satyam Hall, Panchasar Road, Morbi 363641</p><p>Contact: 95108 99998</p></div>
 <h3>Business Modules</h3><div class="menu">
-<div class="item">📊 Dashboard</div><div class="item" onclick="openInvoice()">🧾 Sales Entry / GST Invoice</div><div class="item" onclick="openPurchasePage()">🛒 Purchase Entries</div><div class="item" onclick="openProducts()">📦 Products & Stock</div><div class="item" onclick="openParties('CUSTOMER')">👥 Customers</div><div class="item" onclick="openParties('SUPPLIER')">🏭 Suppliers</div><div class="item" onclick="openExpensePage()">💸 Expenses</div><div class="item" onclick="openRecycleBin()">♻️ Recycle Bin</div><div class="item" onclick="openReports()">📈 GST Reports</div><div class="item">📒 Customer Ledger (Coming Soon)</div></div>
+<div class="item">📊 Dashboard</div><div class="item" onclick="openInvoice()">🧾 Sales Entry / GST Invoice</div><div class="item" onclick="openPurchasePage()">🛒 Purchase Entries</div><div class="item" onclick="openProducts()">📦 Products & Stock</div><div class="item" onclick="openParties('CUSTOMER')">👥 Customers</div><div class="item" onclick="openParties('SUPPLIER')">🏭 Suppliers</div><div class="item" onclick="openExpensePage()">💸 Expenses</div><div class="item" onclick="openRecycleBin()">♻️ Recycle Bin</div><div class="item" onclick="openReports()">📈 GST Reports</div><div class="item" onclick="openStockReport()">📦 Stock Report & Low Stock Alert</div><div class="item">📒 Customer Ledger (Coming Soon)</div></div>
 </div>
 <div id="productPage">
 <div class="card"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>📦 Product Management</h2></div>
@@ -88,6 +88,28 @@
  </div>
 </div>
 
+
+<div id="stockPage">
+ <div class="card no-print"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>📦 Stock Report & Low Stock Alert</h2><p class="small">Live stock based on the current_stock value saved in Products. This report does not change stock quantities.</p>
+  <div class="form-grid">
+   <div><label>Low Stock Alert: show products at or below</label><input id="lowStockLimit" type="number" min="0" step="1" value="5"></div>
+   <div style="align-self:end"><button onclick="loadStockReport()">Show Report</button><button class="secondary" onclick="window.print()">Print / Save PDF</button></div>
+  </div>
+  <p id="stockReportMessage" class="small"></p>
+ </div>
+ <div id="stockReportPrint">
+  <div class="card"><h3>Stock Summary</h3><div class="form-grid">
+   <div><label>Total Products</label><h3 id="stockProductCount">0</h3></div>
+   <div><label>Total Units in Stock</label><h3 id="stockUnitCount">0</h3></div>
+   <div><label>Low Stock Products</label><h3 id="lowStockCount">0</h3></div>
+   <div><label>Out of Stock Products</label><h3 id="outStockCount">0</h3></div>
+   <div><label>Stock Value (Purchase Price)</label><h3 id="stockValue">₹0.00</h3></div>
+  </div></div>
+  <div class="card"><h3>⚠️ Low Stock / Out of Stock</h3><div class="table-wrap"><table><thead><tr><th>Product</th><th>Brand</th><th>HSN</th><th>Current Stock</th><th>Purchase Price</th><th>Stock Value</th></tr></thead><tbody id="lowStockRows"></tbody></table></div></div>
+  <div class="card"><h3>All Product Stock</h3><div class="table-wrap"><table><thead><tr><th>Product</th><th>Brand</th><th>Category</th><th>HSN</th><th>Current Stock</th><th>Purchase Price</th><th>Sales Price</th><th>Stock Value</th><th>Status</th></tr></thead><tbody id="allStockRows"></tbody></table></div></div>
+ </div>
+</div>
+
 <div id="expensePage">
  <div class="card"><button class="secondary" onclick="backToDashboard()">← Dashboard</button><button class="logout" onclick="logout()">Logout</button><h2>💸 Expense Entries</h2><p class="small">Saved expenses. This screen currently provides viewing and deletion of existing expense records.</p><button onclick="loadExpenses()">Refresh</button><div class="table-wrap"><table><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Payment</th><th>Action</th></tr></thead><tbody id="expenseTable"></tbody></table></div><p id="expenseMessage" class="small"></p></div>
 </div>
@@ -100,7 +122,7 @@ const SUPABASE_URL="https://nbzbmttmrxqljsgekrpl.supabase.co";
 const SUPABASE_KEY="sb_publishable_nFL140e3jTOH8TZswp1GyQ_fW_7lTek";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let products=[],editingId=null,parties=[],editingPartyId=null,currentPartyType="CUSTOMER",invoiceProducts=[],editingInvoiceId=null,invoiceItemsAlreadySaved=false,purchaseProducts=[],purchaseSuppliers=[];
-function hideAllPages(){["login","dashboard","resetPage","productPage","partyPage","invoicePage","purchasePage","expensePage","recyclePage","reportsPage"].forEach(id=>document.getElementById(id).style.display="none")}
+function hideAllPages(){["login","dashboard","resetPage","productPage","partyPage","invoicePage","purchasePage","expensePage","recyclePage","reportsPage","stockPage"].forEach(id=>document.getElementById(id).style.display="none")}
 function showLogin(){hideAllPages();document.getElementById("login").style.display="block"}
 function showDashboard(){hideAllPages();document.getElementById("dashboard").style.display="block"}
 function backToDashboard(){showDashboard()}
@@ -242,6 +264,37 @@ async function deletePurchaseBill(id,label){
  let {error}=await db.from("purchase_bills").update({deleted_at:new Date().toISOString()}).eq("id",id);
  if(error){await db.rpc("apply_purchase_stock",{p_bill_id:id});alert("Bill move error: "+error.message+". Stock re-application was attempted.");return}
  alert("Purchase bill "+label+" moved to Recycle Bin. Stock reduced.");loadPurchaseBills();loadProducts();
+}
+
+
+/* STOCK REPORT AND LOW STOCK ALERT */
+function openStockReport(){
+ hideAllPages();
+ document.getElementById("stockPage").style.display="block";
+ loadStockReport();
+}
+async function loadStockReport(){
+ const msg=document.getElementById("stockReportMessage");
+ const limitInput=document.getElementById("lowStockLimit");
+ const limit=Math.max(0,Number(limitInput.value||0));
+ msg.innerText="Loading stock report...";
+ const {data,error}=await db.from("products").select("id,product_name,brand_name,category,hsn_code,purchase_price,sales_price,current_stock,deleted_at").is("deleted_at",null).order("product_name",{ascending:true});
+ if(error){msg.innerText="Stock report error: "+error.message;return}
+ const list=data||[];
+ const stock=p=>Number(p.current_stock||0);
+ const low=list.filter(p=>stock(p)<=limit);
+ const out=list.filter(p=>stock(p)<=0);
+ const totalUnits=list.reduce((s,p)=>s+stock(p),0);
+ const totalValue=list.reduce((s,p)=>s+stock(p)*Number(p.purchase_price||0),0);
+ document.getElementById("stockProductCount").innerText=list.length;
+ document.getElementById("stockUnitCount").innerText=Number(totalUnits.toFixed(2));
+ document.getElementById("lowStockCount").innerText=low.length;
+ document.getElementById("outStockCount").innerText=out.length;
+ document.getElementById("stockValue").innerText=money(totalValue);
+ const row=p=>`<tr><td>${escapeHTML(p.product_name)}</td><td>${escapeHTML(p.brand_name||"")}</td><td>${escapeHTML(p.hsn_code||"")}</td><td><b>${stock(p)}</b></td><td>${money(p.purchase_price)}</td><td>${money(stock(p)*Number(p.purchase_price||0))}</td></tr>`;
+ document.getElementById("lowStockRows").innerHTML=low.map(row).join("")||'<tr><td colspan="6">No low-stock products at this alert level</td></tr>';
+ document.getElementById("allStockRows").innerHTML=list.map(p=>`<tr><td>${escapeHTML(p.product_name)}</td><td>${escapeHTML(p.brand_name||"")}</td><td>${escapeHTML(p.category||"")}</td><td>${escapeHTML(p.hsn_code||"")}</td><td><b>${stock(p)}</b></td><td>${money(p.purchase_price)}</td><td>${money(p.sales_price)}</td><td>${money(stock(p)*Number(p.purchase_price||0))}</td><td>${stock(p)<=0?"OUT OF STOCK":stock(p)<=limit?"LOW STOCK":"IN STOCK"}</td></tr>`).join("")||'<tr><td colspan="9">No products found</td></tr>';
+ msg.innerText=`Report updated. Alert level: ${limit} units.`;
 }
 
 /* MONTHLY GST REPORTS */
