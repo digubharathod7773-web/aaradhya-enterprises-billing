@@ -9,7 +9,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#202b3c}header{background:#172b4d;color:white;padding:18px 22px}header h2{margin:0}.container{max-width:1150px;margin:25px auto;padding:15px}.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:18px}input,select,textarea{width:100%;padding:11px;margin:7px 0;border:1px solid #ddd;border-radius:7px;font:inherit}button{background:#1769e0;color:white;border:0;padding:11px 16px;border-radius:7px;cursor:pointer;margin:4px}button:disabled{opacity:.6;cursor:not-allowed}.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}.item{background:white;padding:22px;border-radius:10px;box-shadow:0 2px 10px #0001;font-weight:bold;cursor:pointer}.small{color:#65738b;font-size:14px}#dashboard,#resetPage,#productPage,#partyPage,#invoicePage,#purchasePage,#expensePage,#recyclePage,#reportsPage,#stockPage,#outstandingPage{display:none}#login{max-width:420px;margin:65px auto}.logout{float:right;background:#e34b4b}.link{background:none;color:#1769e0;padding:8px 0;text-decoration:underline}.secondary{background:#65738b}.danger{background:#dc3545}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px;min-width:700px}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#f0f3f8}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}label{font-size:14px;font-weight:bold}.active-tab{background:#172b4d}.invoice-line input,.purchase-line input{min-width:75px}.totalbox{max-width:420px;margin-left:auto}.totalbox div{display:flex;justify-content:space-between;align-items:center;padding:7px;border-bottom:1px solid #eee}.muted{color:#65738b}.status{padding:10px;background:#eef5ff;border-radius:7px;margin:10px 0}.purchase-line select{min-width:160px}
 @media(max-width:600px){.card{padding:14px}.container{padding:8px}header{padding:14px}}
-@media print{header,.no-print,#invoicePage .card:first-child,#reportsPage>.card:first-child,#stockPage>.card:first-child,#outstandingPage>.card:first-child{display:none!important}#reportsPage{display:block!important}#gstReportPrint{display:block!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}}
+@media print{header,.no-print,#invoicePage .card:first-child,#reportsPage>.card:first-child,#stockPage>.card:first-child,#outstandingPage>.card:first-child{display:none!important}#reportsPage{display:block!important}#gstReportPrint{display:block!important}body{background:white}.container{margin:0;padding:0;max-width:none}.card{box-shadow:none;border:0}#invoicePrint{display:block!important}.invoice-printing #reportsPage,.invoice-printing #gstReportPrint{display:none!important}}
 </style>
 </head>
 <body>
@@ -48,7 +48,7 @@
 <div class="table-wrap"><table><thead><tr><th style="min-width:180px">Product</th><th>HSN</th><th>Qty</th><th>Rate</th><th>GST %</th><th>Taxable</th><th>Total</th><th class="no-print">Remove</th></tr></thead><tbody id="invoiceItems"></tbody></table></div>
 <div class="no-print"><button onclick="addInvoiceRow()">+ Add Product</button></div>
 <div class="totalbox"><div><span>Subtotal</span><b id="subTotal">₹0.00</b></div><div><span>CGST</span><b id="cgstTotal">₹0.00</b></div><div><span>SGST</span><b id="sgstTotal">₹0.00</b></div><div><span>IGST</span><b id="igstTotal">₹0.00</b></div><div><span>Discount (₹)</span><input class="no-print" id="discount" type="number" min="0" value="0" oninput="calculateInvoice()" style="max-width:130px"><b id="discountPrint" class="print-only"></b></div><div><strong>Grand Total</strong><strong id="grandTotal">₹0.00</strong></div><div><span>Paid Amount (₹)</span><input class="no-print" id="paidAmount" type="number" min="0" value="0" oninput="calculateInvoice()" style="max-width:130px"></div><div><span>Balance</span><b id="balanceAmount">₹0.00</b></div></div>
-<div class="no-print"><label>Notes</label><textarea id="invoiceNotes" rows="2" placeholder="Notes (optional)"></textarea><button id="saveInvoiceBtn" onclick="saveInvoice()">Save Invoice</button><button class="secondary" onclick="window.print()">Print / Save PDF</button><button class="secondary" id="whatsappInvoiceBtn" onclick="shareInvoiceWhatsApp()" disabled>Share on WhatsApp</button><button class="secondary" onclick="newInvoice()">New Invoice</button><p id="invoiceMessage"></p></div>
+<div class="no-print"><label>Notes</label><textarea id="invoiceNotes" rows="2" placeholder="Notes (optional)"></textarea><button id="saveInvoiceBtn" onclick="saveInvoice()">Save Invoice</button><button class="secondary" onclick="printSalesInvoice()">Print / Save PDF</button><button class="secondary" id="whatsappInvoiceBtn" onclick="shareInvoiceWhatsApp()" disabled>Share on WhatsApp</button><button class="secondary" onclick="newInvoice()">New Invoice</button><p id="invoiceMessage"></p></div>
 </div></div>
 <div class="card no-print"><h3>Recent Sales Invoices</h3><p class="small">Open an invoice to view or continue saving its items. Existing invoice headers will not be duplicated.</p><button onclick="loadRecentInvoices()">Refresh</button><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer ID</th><th>Total</th><th>Paid</th><th>Action</th></tr></thead><tbody id="recentInvoices"></tbody></table></div></div>
 </div>
@@ -524,6 +524,12 @@ const aePageObserver=new MutationObserver(()=>{
 });
 aePageObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:["style"]});
 
+
+function printSalesInvoice(){
+ document.body.classList.add('invoice-printing');
+ window.addEventListener('afterprint',()=>document.body.classList.remove('invoice-printing'),{once:true});
+ window.print();
+}
 </script>
 </body>
 </html>
