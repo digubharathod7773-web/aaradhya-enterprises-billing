@@ -155,8 +155,8 @@ async function login(){let email=document.getElementById("email").value.trim(),p
 async function forgotPassword(){let email=document.getElementById("email").value.trim(),msg=document.getElementById("message");if(!email){msg.innerText="First enter your email address";return}msg.innerText="Sending reset email...";let {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});msg.innerText=error?error.message:"Password reset email sent. Check your inbox."}
 async function updatePassword(){let p=document.getElementById("newPassword").value,c=document.getElementById("confirmPassword").value,m=document.getElementById("resetMessage");if(p.length<8){m.innerText="Password must be at least 8 characters";return}if(p!==c){m.innerText="Passwords do not match";return}let {error}=await db.auth.updateUser({password:p});m.innerText=error?error.message:"Password updated successfully!";if(!error)setTimeout(showDashboard,1500)}
 async function logout(){await db.auth.signOut();showLogin()}
-db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){hideAllPages();document.getElementById("resetPage").style.display="block"}else if(event==="SIGNED_IN"&&session)showDashboard();else if(event==="SIGNED_OUT")showLogin()});
-db.auth.getSession().then(({data})=>{if(data.session)showDashboard()});
+db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){hideAllPages();document.getElementById("resetPage").style.display="block"}else if(event==="SIGNED_OUT")showLogin()});
+db.auth.getSession().then(({data})=>{if(data.session)restoreLastPage();else showLogin()});
 /* AUTOMATIC BACKUP + EXCEL EXPORT */
 let backupCheckStarted=false;
 const BACKUP_TABLES=["products","parties","sales_invoices","sales_invoice_items","purchase_bills","purchase_bill_items","expense"];
@@ -497,6 +497,33 @@ if(!invoiceId){msg.innerText="Saving invoice header...";let header={invoice_date
 else{msg.innerText="Checking existing items before saving...";let {data:existing,error:checkError}=await db.from("sales_invoice_items").select("id").eq("invoice_id",invoiceId).limit(1);if(checkError){btn.disabled=false;msg.innerText="Could not verify existing items: "+checkError.message+". No item save attempted.";return}if(existing&&existing.length){invoiceItemsAlreadySaved=true;btn.disabled=true;msg.innerText="Items already exist for "+savedNumber+". Saving stopped to prevent duplicates.";return}}
 let items=rows.map(r=>{let p=invoiceProducts.find(x=>String(x.id)===r.querySelector(".pselect").value),q=Number(r.querySelector(".qty").value),rate=Number(r.querySelector(".rate").value),gst=Number(r.querySelector(".gst").value),tax=q*rate,taxAmt=tax*gst/100;return {invoice_id:invoiceId,product_id:p.id,description:p.product_name,hsn_code:p.hsn_code||null,quantity:q,rate,gst_percentage:gst,taxable_amount:tax,cgst:gstType.value==="INTRA"?taxAmt/2:0,sgst:gstType.value==="INTRA"?taxAmt/2:0,igst:gstType.value==="INTER"?taxAmt:0,total:tax+taxAmt}});
 msg.innerText="Saving items to "+savedNumber+"...";let {error:ie}=await db.from("sales_invoice_items").insert(items);btn.disabled=false;if(ie){msg.innerText="Invoice "+savedNumber+" header is saved, but items failed: "+ie.message+". Do NOT click New Invoice. Fix the error and retry Save Items on this same invoice.";saveInvoiceBtn.innerText="Retry Save Items";return}invoiceItemsAlreadySaved=true;btn.disabled=true;btn.innerText="Items Saved";document.getElementById("whatsappInvoiceBtn").disabled=false;msg.innerText="Invoice "+savedNumber+" and "+items.length+" item(s) saved successfully. You can Print / Save PDF or Share on WhatsApp.";loadRecentInvoices()}
+
+/* REMEMBER LAST OPEN PAGE IN THIS BROWSER TAB */
+const AE_PAGE_KEY="ae_billing_last_open_page";
+const AE_PAGE_IDS=["dashboard","productPage","partyPage","invoicePage","purchasePage","expensePage","recyclePage","reportsPage","stockPage","outstandingPage","backupPage"];
+function restoreLastPage(){
+ const page=sessionStorage.getItem(AE_PAGE_KEY);
+ if(page==="productPage")return openProducts();
+ if(page==="partyPage")return openParties(currentPartyType||"CUSTOMER");
+ if(page==="invoicePage")return openInvoice();
+ if(page==="purchasePage")return openPurchasePage();
+ if(page==="expensePage")return openExpensePage();
+ if(page==="recyclePage")return openRecycleBin();
+ if(page==="reportsPage")return openReports();
+ if(page==="stockPage")return openStockReport();
+ if(page==="outstandingPage")return openOutstandingReport();
+ if(page==="backupPage")return openBackupPage();
+ showDashboard();
+}
+const aePageObserver=new MutationObserver(()=>{
+ const visible=AE_PAGE_IDS.find(id=>{
+  const el=document.getElementById(id);
+  return el && el.style.display!=="none" && el.style.display!=="";
+ });
+ if(visible)sessionStorage.setItem(AE_PAGE_KEY,visible);
+});
+aePageObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:["style"]});
+
 </script>
 </body>
 </html>
