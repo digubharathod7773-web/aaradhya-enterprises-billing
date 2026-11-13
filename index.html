@@ -52,16 +52,16 @@
 <div class="no-print"><button onclick="addInvoiceRow()">+ Add Product</button></div>
 <div class="totalbox"><div><span>Subtotal</span><b id="subTotal">₹0.00</b></div><div><span>CGST</span><b id="cgstTotal">₹0.00</b></div><div><span>SGST</span><b id="sgstTotal">₹0.00</b></div><div><span>IGST</span><b id="igstTotal">₹0.00</b></div><div><span>Discount (₹)</span><input class="no-print" id="discount" type="number" min="0" value="0" oninput="calculateInvoice()" style="max-width:130px"><b id="discountPrint" class="print-only"></b></div><div><strong>Grand Total</strong><strong id="grandTotal">₹0.00</strong></div><div><span>Paid Amount (₹)</span><input class="no-print" id="paidAmount" type="number" min="0" value="0" oninput="calculateInvoice()" style="max-width:130px"></div><div><span>Balance</span><b id="balanceAmount">₹0.00</b></div></div>
 <div class="invoice-payment-footer">
+ <div class="invoice-upi-qr">
+  <div id="upiQrCode"></div>
+  <strong>SCAN TO PAY</strong>
+ </div>
  <div class="invoice-bank-details">
   <h4>BANK DETAILS</h4>
   <p><b>Bank:</b> HDFC BANK</p>
   <p><b>Account No.:</b> 50100105910174</p>
   <p><b>IFSC:</b> HDFC0000306</p>
   <p><b>UPI ID:</b> digvijaysinhrathod55@ybl</p>
- </div>
- <div class="invoice-upi-qr">
-  <div id="upiQrCode"></div>
-  <strong>SCAN TO PAY</strong>
  </div>
  <div class="invoice-authorised-signature">
   <div class="invoice-signature-line"></div>
